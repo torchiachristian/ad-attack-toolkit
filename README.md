@@ -109,10 +109,10 @@ pip install ldap3 impacket reportlab
 
 ## Usage
 
-### Run full assessment
+### Run full assessment (ADMIN.TEST CAN BUG)
 ```bash
 python3 ad_attack.py --dc-ip 192.168.56.10 --domain psychosec.local \
-  -u labadmin -p "Password" --all
+  --pth --pth-user admin.test --nthash 520126...
 ```
 
 ### Run full assessment with Pass-the-Hash
