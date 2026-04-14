@@ -42,7 +42,13 @@ The toolkit was developed and tested against a local VirtualBox lab:
 2. Download Windows 11 Enterprise Evaluation ISO from [Microsoft Evaluation Center](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-11-enterprise)
 3. Create a VirtualBox Host-Only network:
    ```bash
-   VBoxManage hostonlyif create
+   #Create specific network
+VBoxManage hostonlyif create
+VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.255.0
+
+   #Assign it to vms (or via GUI: Settings → Network → Adapter 1 → Host-Only → vboxnet0)
+VBoxManage modifyvm "DC01" --nic1 hostonly --hostonlyadapter1 vboxnet0
+VBoxManage modifyvm "CLIENT01" --nic1 hostonly --hostonlyadapter1 vboxnet0
    ```
 4. Create DC01 VM (4GB RAM, 2 CPU, 50GB disk), attach Server ISO
 5. Create CLIENT01 VM (4GB RAM, 2 CPU, 50GB disk), attach Windows 11 ISO
