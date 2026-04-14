@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+adtoolkit/
+*.log
+rockyou.txt
+rockyou.txt.tar.gz
+custom_wordlist.txt
+*.pot
