@@ -2,11 +2,11 @@
 
 Active Directory security assessment tool. Automates enumeration, AS-REP Roasting, Kerberoasting, and Pass-the-Hash against a target domain, and generates a PDF report with findings and remediation steps.
 
-Built as a portfolio project to demonstrate understanding of AD attack vectors, Kerberos protocol weaknesses, and defensive measures.
+Built as a portfolio tool for the understanding of AD attack vectors, Kerberos protocol weaknesses, and defensive measures.
 
 ## What it does
 
-Given a Domain Controller IP and valid domain credentials (even low-privilege), the toolkit:
+Given a Domain Controller IP and valid domain credentials (or a low privilege one), the toolkit:
 
 1. **Enumerates** all users, groups, and permissions via LDAP
 2. **Identifies** users with Kerberos pre-authentication disabled (AS-REP Roasting targets)
@@ -14,9 +14,9 @@ Given a Domain Controller IP and valid domain credentials (even low-privilege), 
 4. **Captures** AS-REP hashes (crackable offline without triggering lockouts)
 5. **Captures** TGS hashes from service accounts (crackable offline)
 6. **Demonstrates** Pass-the-Hash authentication using NTLM hashes
-7. **Generates** a PDF report with executive summary, technical details, and remediation
+7. **Generates** a PDF report with executive summary, technical details, and remediations
 
-This tool tests for specific, well-known misconfigurations. It does not bypass any security controls or exploit zero-days.
+This tool tests for specific, well-known misconfigurations(It does not bypass any security controls or exploit zero-days)
 
 ## Vulnerabilities tested
 
@@ -60,7 +60,37 @@ The toolkit was developed and tested against a local VirtualBox lab:
    # After reboot, disable firewall (lab testing only)
    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
    ```
-8. Create vulnerable users with the included PowerShell script (see `lab_setup/` folder)
+8. 8. Create vulnerable users on DC01 for examples (PowerShell as administrator):
+```powershell
+   # Populate AD with example users just for educational testing, if not use real data
+   # Replace usernames passwords descriptions with your own values if desired
+   
+   # normal users
+   New-ADUser -Name "User One" -SamAccountName "user1" -AccountPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) -Enabled $true
+   New-ADUser -Name "User Two" -SamAccountName "user2" -AccountPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) -Enabled $true
+   
+   # AS REP Roasting targets (no Kerberos pre authentication)
+   New-ADUser -Name "User NoPreauth" -SamAccountName "user.nopreauth" -AccountPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) -Enabled $true
+   Set-ADAccountControl -Identity "user.nopreauth" -DoesNotRequirePreAuth $true
+   
+   New-ADUser -Name "Test NoPreauth" -SamAccountName "test.nopreauth" -AccountPassword (ConvertTo-SecureString "Summer2024!" -AsPlainText -Force) -Enabled $true
+   Set-ADAccountControl -Identity "test.nopreauth" -DoesNotRequirePreAuth $true
+   
+   # Kerberoasting targets (service accounts with SPN)
+   New-ADUser -Name "SQL Service Account" -SamAccountName "svc_sql" -AccountPassword (ConvertTo-SecureString "SQLadmin1!" -AsPlainText -Force) -Enabled $true
+   setspn -A MSSQLSvc/DC01.psychosec.local:1433 svc_sql
+   
+   New-ADUser -Name "Backup Service Account" -SamAccountName "svc_backup" -AccountPassword (ConvertTo-SecureString "Backup2023!" -AsPlainText -Force) -Enabled $true
+   setspn -A backupservice/DC01.psychosec.local svc_backup
+   
+   # Domain Admin with a weak password
+   New-ADUser -Name "Admin Account" -SamAccountName "admin.test" -AccountPassword (ConvertTo-SecureString "Admin123!" -AsPlainText -Force) -Enabled $true
+   Add-ADGroupMember -Identity "Domain Admins" -Members "admin.test"
+   
+   # Regular Domain Admin for running the toolkit
+   New-ADUser -Name "Lab Admin" -SamAccountName "labadmin" -AccountPassword (ConvertTo-SecureString "LabPassword" -AsPlainText -Force) -Enabled $true
+   Add-ADGroupMember -Identity "Domain Admins" -Members "labadmin"
+```
 9. Join CLIENT01 to the domain
 
 ## Installation
