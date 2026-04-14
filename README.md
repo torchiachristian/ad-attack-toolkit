@@ -53,10 +53,12 @@ The toolkit was developed and tested against a local VirtualBox lab:
 4. Create DC01 VM (4GB RAM, 2 CPU, 50GB disk), attach Server ISO
 5. Create CLIENT01 VM (4GB RAM, 2 CPU, 50GB disk), attach Windows 11 ISO
 6. Set both VMs to Host-Only adapter
-7. Install Windows Server, set static IP (192.168.56.10), promote to Domain Controller:
+7. Install Windows Server, set static IP (192.168.56.10),DNS 127.0.0.1 only then promote to Domain Controller:
    ```powershell
    Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
    Install-ADDSForest -DomainName "psychosec.local" -DomainNetBIOSName "PSYCHOSEC" -InstallDns -Force
+   # After reboot, disable firewall (lab testing only)
+   Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
    ```
 8. Create vulnerable users with the included PowerShell script (see `lab_setup/` folder)
 9. Join CLIENT01 to the domain
