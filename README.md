@@ -60,7 +60,7 @@ The toolkit was developed and tested against a local VirtualBox lab:
    # After reboot, disable firewall (lab testing only)
    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
    ```
-8. 8. Create vulnerable users on DC01 for examples (PowerShell as administrator):
+8. Create vulnerable users on DC01 for examples (PowerShell as administrator):
 ```powershell
    # Populate AD with example users just for educational testing, if not use real data
    # Replace usernames passwords descriptions with your own values if desired
@@ -91,7 +91,13 @@ The toolkit was developed and tested against a local VirtualBox lab:
    New-ADUser -Name "Lab Admin" -SamAccountName "labadmin" -AccountPassword (ConvertTo-SecureString "LabPassword" -AsPlainText -Force) -Enabled $true
    Add-ADGroupMember -Identity "Domain Admins" -Members "labadmin"
 ```
-9. Join CLIENT01 to the domain
+9. Install Windows11 on CLIENT01 then set static IP (192.168.56.20, DNS 192.168.56.10), disable firewall, then join to domain:
+```powershell
+   # Disable firewall (only in lab testing )
+   Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+```
+   Join domain via GUI: Settings → System → About → Domain or workgroup → Domain → psychosec.local
+   Use labadmin/LabPassword to authenticate the join operation.
 
 ## Installation
 
