@@ -4,6 +4,10 @@ Active Directory security assessment tool. Automates enumeration, AS-REP Roastin
 
 Built as a portfolio tool for the understanding of AD attack vectors, Kerberos protocol weaknesses, and defensive measures.
 
+## Reproducible Setup (!)
+Clone this repository and follow the lab setup section step by step. 
+All commands are tested and copypaste ready, you can replicate the full attack environment from scratch in few hours.
+
 ## What it does
 
 Given a Domain Controller IP and valid domain credentials (or a low privilege one), the toolkit:
