@@ -58,13 +58,12 @@ def setup_logging(log_file='ad_attack.log'):
     return logger
 
 
-def run_enum(dc_ip, username, password):
+def run_enum(dc_ip, username, password, domain=None):
     """Esegue enumerazione AD."""
     print("\n" + "=" * 60)
     print("  FASE 1: ENUMERAZIONE AD")
     print("=" * 60)
-
-    conn, base_dn = connect_ldap(dc_ip, username, password)
+    conn, base_dn = connect_ldap(dc_ip, username, password, domain)
     users = enum_users(conn, base_dn)
     groups = enum_groups(conn, base_dn)
     asrep_targets = find_asrep_targets(users)
@@ -245,7 +244,7 @@ def generate_pdf(results, dc_ip, domain, output_file='ad_attack_report.pdf'):
         ['Target Domain Controller', dc_ip],
         ['Domain', domain],
         ['Date', datetime.now().strftime('%Y-%m-%d %H:%M')],
-        ['Tool', 'AD Attack Toolkit v1.0'],
+        ['Tool', 'AD Attack Toolkit v1.1'],
         ['Author', 'Penetration Test Report'],
     ]
     info_table = Table(info_data, colWidths=[6*cm, 10*cm])
@@ -564,7 +563,7 @@ Esempi:
     # Banner
     print("""
     ╔══════════════════════════════════════════════════╗
-    ║          AD ATTACK TOOLKIT v1.0                  ║
+    ║          AD ATTACK TOOLKIT v1.1                  ║
     ║          Active Directory Security Assessment    ║
     ╠══════════════════════════════════════════════════╣
     ║  Target DC:  {:<35s}║
@@ -582,7 +581,7 @@ Esempi:
         # Enumerazione
         if args.all or args.enum:
             logger.info("Starting enumeration")
-            results['enum'] = run_enum(args.dc_ip, f"{args.domain.split('.')[0].upper()}\\{args.username}", args.password)
+            results['enum'] = run_enum(args.dc_ip, args.username, args.password, args.domain)
 
         # AS-REP Roasting
         if args.all or args.asrep:

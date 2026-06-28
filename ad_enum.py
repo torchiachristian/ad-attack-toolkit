@@ -37,8 +37,10 @@ def connect_ldap(dc_ip, username=None, password=None):
 
     if username and password:
         # Autenticazione con credenziali
-        conn = Connection(server, user=username, password=password, auto_bind=True)
-        print(f"[+] Connesso a {dc_ip} come {username}")
+        _u = username.split("\\")[-1].split("@")[0]
+        bind_user = f"{_u}@psychosec.local"
+        conn = Connection(server, user=bind_user, password=password, auto_bind=True)
+        print(f"[+] Connesso a {dc_ip} come {bind_user}")
     else:
         # Tentativo anonimo
         conn = Connection(server, auto_bind=True)
@@ -63,6 +65,38 @@ def enum_users(conn, base_dn):
     print("=" * 60)
 
     # Attributi che vogliamo leggere per ogni utente
+def connect_ldap(dc_ip, username=None, password=None, domain=None):
+    """
+    Connessione al Domain Controller via LDAP.
+    Se username/password sono forniti, fa autenticazione.
+    Altrimenti tenta connessione anonima (spesso bloccata in AD moderni).
+    """
+    server = Server(dc_ip, port=389, get_info=ALL)
+    if username and password:
+        # Autenticazione con credenziali.
+        # AD con bind SIMPLE richiede l'username in forma UPN (user@dominio).
+        # Se l'username arriva come DOMINIO\user o e' gia' un UPN, lo si usa
+        # cosi' com'e'; altrimenti si costruisce l'UPN dal nome dominio.
+        if "@" in username or "\\" in username:
+            bind_user = username
+        elif domain:
+            bind_user = f"{username}@{domain}"
+        else:
+            bind_user = username
+        conn = Connection(server, user=bind_user, password=password, auto_bind=True)
+        print(f"[+] Connesso a {dc_ip} come {bind_user}")
+    else:
+        # Tentativo anonimo
+        conn = Connection(server, auto_bind=True)
+        print(f"[+] Connesso a {dc_ip} (anonimo)")
+    # Estrai il base DN dal server info (es. DC=psychosec,DC=local)
+    base_dn = server.info.other['defaultNamingContext'][0]
+    print(f"[+] Base DN: {base_dn}")
+    return conn, base_dn
+
+
+def enum_users(conn, base_dn):
+    """Enumera tutti gli utenti del dominio."""
     attributes = [
         'sAMAccountName',       # Username (es. m.rossi)
         'cn',                   # Nome completo (es. Marco Rossi)

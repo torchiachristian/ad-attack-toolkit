@@ -1,8 +1,21 @@
+# Ambiente virtuale
+adtoolkit/
+venv/
 __pycache__/
 *.pyc
-adtoolkit/
+
+# Output e artefatti di sessione (contengono dati del lab)
+*.txt
+*.json
+*.pdf
+!requirements.txt
+
+# Wordlist e file di lavoro
+lab_wordlist.txt
+rockyou.txt*
+fix_tgs.py
+tgs_fixed.txt
+tgs_impacket.txt
 *.log
-rockyou.txt
-rockyou.txt.tar.gz
 custom_wordlist.txt
 *.pot
